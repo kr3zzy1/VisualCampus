@@ -1,0 +1,1 @@
+{"type":"module","scripts":{"dev":"vite","build":"tsc -b && vite build","lint":"tsc -b --noEmit"},"dependencies":{"@tailwindcss/vite":"latest","@vitejs/plugin-react":"latest","vite":"latest","typescript":"latest","react":"latest","react-dom":"latest","tailwindcss":"latest"},"devDependencies":{"@types/node":"latest","@types/react":"latest","@types/react-dom":"latest"}}
