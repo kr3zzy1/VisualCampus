@@ -209,8 +209,7 @@ export default function App() {
                               photo={{
                                 id: i.id || String(Math.random()),
                                 url: i.url || i.image_url || '',
-                                source: i.source || i.source_name || 'Wikimedia Commons',
-                                title: i.title || ''
+                                source: i.source || i.source_name || 'Wikimedia Commons'
                               }} 
                             />
                           ))}
