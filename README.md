@@ -1,100 +1,104 @@
+Вы можете скопировать готовый текст ниже и просто сохранить его в файле с именем `README.md` в корневой папке вашего проекта:
+
+```markdown
 # LOCUS Visual Campus
 
-Working MVP for LOCUS Startup Hackathon 2026 Case 01: a university name becomes a source-linked visual profile. It deliberately favors fewer verifiable images over attractive but unsupported results.
+Готовый MVP для хакатона **LOCUS Startup Hackathon 2026 (Кейс 01)**: интеллектуальный веб-сервис, который превращает название университета в визуальный профиль с проверкой источников и мгновенным откликом (менее 30 секунд).
 
-## What it does
+---
 
-The search bar accepts official names and common initial-based abbreviations generated from the local directory (for example, `MIT`, `KBTU`).
+## 1. Задача (Case Overview)
+Преобразовать текстовое название университета в верифицированный визуальный профиль кампуса. Система должна строиться на честных сигналах верификации: вместо генерации фейковых или случайных картинок сервис работает строго по принципу «лучше меньше подтвержденных результатов, чем недостоверная выдача».
 
-When a Gemini key is configured, the backend uses Google Search grounding to corroborate the university context and Gemini Vision to assess Wikimedia candidates. Gemini never invents photo URLs: it only accepts/rejects traceable Wikimedia results.
+## 2. Решение
+* **Динамические AI-инсайты:** Использование Google Gemini для генерации развернутого академического описания университета и интеллектуальных поисковых запросов по категориям.
+* **Гибридный поиск по категориям:** Разделение контента на ключевые секции (кампус, общежития, аудитории, библиотеки, город, спорт, лаборатории, студенческая жизнь).
+* **Честная визуализация и защита от битых ссылок:** Карточки отображают статус верификации и ссылки на первоисточники. Если изображение не удается загрузить, карточка автоматически скрывается, поддерживая чистоту интерфейса.
 
-1. Resolves a real university entity using the Wikidata API. If Wikidata cannot find it and Gemini is configured, the app uses Gemini with Google Search grounding as a source-backed fallback (not model memory).
-2. Searches each category concurrently through a pluggable image-search provider (Wikimedia Commons is enabled by default, so no key is required).
-3. Retains source page, file URL, title, domain and available metadata for every item.
-4. Filters by university/category evidence, gives each result an explainable confidence score, and excludes low-confidence candidates.
-   When `GEMINI_API_KEY` is configured, a bounded server-side Gemini vision check adds or removes confidence; an unavailable vision call never improves an image's score.
-5. Removes URL-level exact duplicates and normalized-title visual candidates. The deduplication service is isolated for safe future bounded-download pHash/embedding support.
-6. Caches completed profiles in-memory with a configurable TTL, reports progress, supports ambiguous choices, timeouts and honest errors.
+## 3. Стек технологий
+* **Frontend:** React, TypeScript, Vite, современный CSS (Grid, Flexbox).
+* **Backend:** FastAPI (Python), Uvicorn.
+* **Интеграции:** Google GenAI SDK (Gemini), Wikidata & Wikimedia APIs.
 
-## Architecture
-
-```
-frontend/                 React + TypeScript + Vite UI
+## 4. Архитектура
+Проект разделен на изолированные модули клиентской и серверной частей:
+```text
+frontend/                 React + TypeScript + Vite (UI, компоненты, API-клиент)
 backend/app/
-  services/               resolution, provider, verification, confidence, deduplication, generation
-  models/                 API models
-  utils/cache.py          TTL cache boundary (replaceable with Redis/SQLite)
+  services/               Модули резолюции, генерации через Gemini, поиска и верификации
+  models/                 Pydantic-модели данных API
+  config.py               Конфигурация окружения
+
 ```
 
-`POST /api/search` creates a job; `GET /api/search/{id}` exposes status, progress and the profile. `POST /api/search/{id}/select` continues an ambiguous resolution.
+* **API Endpoints:**
+* `POST /api/search` — создание задачи на поиск и сбор профиля.
+* `GET /api/search/{id}` — получение статуса, прогресса и готового профиля.
+* `POST /api/search/{id}/select` — выбор конкретного вуза при неоднозначном запросе (ambiguous match).
 
-## Setup
 
-Copy `.env.example` to `.env`. The default provider needs no secret:
 
-```powershell
-Copy-Item .env.example .env
+## 5. AI / API
+
+* **Google Gemini API (`gemini-2.0-flash`):** Применяется на бэкенде для семантического анализа запроса, генерации текстового описания (Summary) и построения точных поисковых запросов по категориям.
+* **Wikidata & Wikimedia Commons APIs:** Используются для поиска сущностей университетов и сбора исходных медиаматериалов с метаданными.
+
+## 6. Готовые компоненты
+
+* **Интерфейс поиска и автодополнения:** Интерактивная строка ввода с выпадающими подсказками названий вузов.
+* **`ImageCard.tsx`:** Самодостаточный компонент карточки изображения с защитой от ошибок загрузки (`onError`), ссылками на первоисточник и автоматическим скрытием поврежденных элементов.
+* **Плейсхолдеры статусов и прогресс-бар:** Отображение этапов анализа данных в реальном времени.
+
+## 7. Инструкция запуска
+
+1. Скопируйте файл конфигурации окружения:
+```bash
+cp .env.example .env
+
+```
+
+
+2. **Запуск бэкенда:**
+```bash
 cd backend
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1  # На Windows (или source .venv/bin/activate для macOS/Linux)
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8010
+
 ```
 
-In a second terminal:
 
-```powershell
+3. **Запуск фронтенда (в новом терминале):**
+```bash
 cd frontend
 npm install
 npm run dev
+
 ```
 
-Open `http://localhost:5173`. The Vite proxy keeps the API key boundary on the backend.
 
-## Environment variables
+Откройте **`http://localhost:5173`** в браузере (настроен прокси-сервер Vite для связи с бэкендом).
 
-| Variable | Purpose |
-| --- | --- |
-| `SEARCH_PROVIDER` | `wikimedia` by default; provider abstraction supports SerpAPI extension |
-| `SERPAPI_KEY` | Reserved for a future SerpAPI adapter; never sent to the browser |
-| `OPENAI_API_KEY` | Reserved for optional AI visual verification |
-| `GEMINI_API_KEY` | Optional Gemini API key for server-side visual verification |
-| `GEMINI_MODEL` | Gemini model name, default `gemini-2.0-flash` |
-| `CACHE_TTL_SECONDS` | Cache lifetime, default 3600 |
-| `REQUEST_TIMEOUT_SECONDS` | Per-provider HTTP timeout |
-| `ALLOWED_ORIGINS` | CORS origin list |
+## 8. Тестовый сценарий
 
-## Confidence and sources
+1. Введите в строку поиска **«Stanford University»** или **«KBTU»** и нажмите Search.
+2. Убедитесь, что процесс анализа проходит по шагам (прогресс-бар), а затем отображается шапка профиля, развернутое описание (Summary) и сетка категорий с фото.
+3. Проверьте обработку неоднозначных запросов (например, ввести сокращение, требующее выбора из списка кандидатов).
+4. Проверьте поведение при сбое сети или недоступности картинки: карточка с недоступным изображением скрывается автоматически.
 
-The score is evidence, not a claim of visual certainty: title/query university match, category context, and traceable-source metadata contribute reasons displayed by the API. A score below 55 is excluded. Every card links to its actual Wikimedia Commons file page. Dates are `null` where metadata cannot safely be normalized; the UI never invents one.
+## 9. Ограничения
 
-## Safety and limitations
+* Покрытие зависит от доступности открытых данных в публичных каталогах.
+* Ограничение времени ответа жестко оптимизировано под лимит в 30 секунд за счет асинхронной обработки и отказоустойчивых фоллбеков.
+* Система не генерирует искусственные изображения-заглушки: при отсутствии проверенных источников выводятся только доступные верифицированные карточки.
 
-- The default provider searches only public Commons material, so coverage varies greatly by university/category.
-- Current MVP uses URL exact hashes and normalized filename/title similarity. For production pHash, use the existing deduplication boundary with an allowlist and strict byte/media limits before downloading remote media; do not indiscriminately fetch arbitrary image URLs.
-- Wikimedia/Wikidata entity records may not include city, country or official website in this compact MVP. Enrich these via Wikidata entity claims in the next iteration.
-- No fake records, images, sources or successful fallback responses are generated. A provider outage returns an error.
+## 10. Роли команды
 
-## Testing and verification
+* **Frontend / UI Product:** Разработка пользовательского интерфейса, интерактивных компонентов (`ImageCard`), сетки и стилей.
+* **Backend / API Integration:** Настройка FastAPI, интеграция с асинхронными потоками и внешними API.
+* **AI / Data Quality:** Настройка промптов для Gemini, управление структурой данных, логикой верификации и обработки ошибок.
 
-```powershell
-cd backend
-pytest
-curl http://localhost:8000/health
 ```
 
-Manual scenarios: search `Harvard University`, `Qatar University`, an unknown university, an empty query, and a short ambiguous query. Expect the API to expose ambiguity when it cannot safely choose an entity.
-
-## Docker
-
-```powershell
-docker compose up --build
 ```
-
-## External services and libraries
-
-Wikidata and Wikimedia Commons APIs, FastAPI, HTTPX, Pydantic, React, Vite and TypeScript. The deduplication boundary is designed for future secure bounded-download pHash implementation.
-
-## Team roles
-
-Frontend/product UI, backend/search integration, and verification/data-quality can work independently through the service boundaries above.

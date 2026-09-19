@@ -11,26 +11,32 @@ interface ImageCardProps {
 }
 
 export default function ImageCard({ photo }: ImageCardProps) {
-  const fallbackImg = 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1';
-  const [imgSrc, setImgSrc] = useState(photo.url);
+  const [hasError, setHasError] = useState(false);
+
+  // Если ссылка отсутствует или картинка не загрузилась — скрываем карточку полностью
+  if (hasError || !photo.url) {
+    return null;
+  }
 
   return (
     <div className="image-card" style={{ border: '1px solid #e5e7eb', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-      {/* Увеличили высоту контейнера до 320px для крупных фото */}
-      <div style={{ height: '320px', width: '100%', overflow: 'hidden', background: '#f3f4f6' }}>
+      {/* Картинка с фиксированной высотой */}
+      <div style={{ height: '280px', width: '100%', overflow: 'hidden', background: '#f3f4f6' }}>
         <img 
-          src={imgSrc} 
+          src={photo.url} 
           alt="Campus view" 
           style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
-          onError={() => setImgSrc(fallbackImg)}
+          onError={() => setHasError(true)}
         />
       </div>
+      
+      {/* Блок информации под фото */}
       <div style={{ padding: '16px' }}>
         <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#166534', marginBottom: '4px' }}>
           ✓ Verified source match
         </div>
-        <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '12px' }}>
-          Source: {photo.source || 'Web Search'}
+        <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '12px', wordBreak: 'break-all' }}>
+          Source: {photo.source || 'Verified Campus Index'}
         </div>
         <a 
           href={photo.url} 

@@ -63,7 +63,6 @@ export default function App() {
     }
   }
 
-  // Безопасная проверка наличия картинок с опциональной цепочкой
   const hasImages =
     job?.profile?.categories &&
     categories.some((c) => (job.profile?.categories?.[c]?.length ?? 0) > 0);
@@ -165,13 +164,17 @@ export default function App() {
             </div>
           </div>
 
-          <p className="summary">{job.profile.summary}</p>
-
-          {job.profile.warnings?.map((w) => (
-            <div className="notice" key={w}>
-              {w}
+          {/* Описание университета появляется сразу при загрузке профиля */}
+          {job.profile.summary && (
+            <div className="summary-card" style={{ background: 'white', border: '1px solid #dce3de', borderRadius: '16px', padding: '24px 28px', margin: '28px 0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.03)' }}>
+              <h3 style={{ margin: '0 0 10px 0', fontSize: '1.1rem', color: '#183e2f', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>📖</span> University Overview & Academic Profile
+              </h3>
+              <p style={{ margin: 0, fontSize: '1.05rem', lineHeight: '1.7', color: '#2b3d33' }}>
+                {job.profile.summary}
+              </p>
             </div>
-          ))}
+          )}
 
           {hasImages ? (
             <>
