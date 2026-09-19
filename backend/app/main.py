@@ -5,6 +5,15 @@ from app.config import settings
 from app.models.profile import Job,SearchRequest,University
 from app.services.university_database import suggest,exact,records
 from app.services.commons import build_profile
+from fastapi import FastAPI
+from mangum import Mangum
+
+app = FastAPI()
+
+# Ваши эндпоинты...
+
+# Адаптер для Vercel
+handler = Mangum(app)
 app=FastAPI(title='Visual Campus API');app.add_middleware(CORSMiddleware,allow_origins=settings.allowed_origins.split(','),allow_methods=['*'],allow_headers=['*']);jobs={}
 @app.get('/health')
 async def health():return {'ok':True,'universities':len(records()),'gemini_configured':bool(settings.gemini_api_key)}
