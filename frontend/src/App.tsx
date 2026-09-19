@@ -164,7 +164,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Описание университета появляется сразу при загрузке профиля */}
           {job.profile.summary && (
             <div className="summary-card" style={{ background: 'white', border: '1px solid #dce3de', borderRadius: '16px', padding: '24px 28px', margin: '28px 0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.03)' }}>
               <h3 style={{ margin: '0 0 10px 0', fontSize: '1.1rem', color: '#183e2f', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -204,8 +203,16 @@ export default function App() {
                       <section className="category" key={c}>
                         <h2>{labels[c]}</h2>
                         <div className="grid">
-                          {job.profile!.categories[c].map((i) => (
-                            <ImageCard key={i.id} photo={i} />
+                          {job.profile!.categories[c].map((i: any) => (
+                            <ImageCard 
+                              key={i.id || Math.random()} 
+                              photo={{
+                                id: i.id || String(Math.random()),
+                                url: i.url || i.image_url || '',
+                                source: i.source || i.source_name || 'Wikimedia Commons',
+                                title: i.title || ''
+                              }} 
+                            />
                           ))}
                         </div>
                       </section>
