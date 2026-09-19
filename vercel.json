@@ -17,6 +17,14 @@
       "dest": "backend/app/main.py"
     },
     {
+      "src": "/suggest(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
+      "src": "/search(.*)",
+      "dest": "backend/app/main.py"
+    },
+    {
       "src": "/assets/(.*)",
       "dest": "/frontend/dist/assets/$1"
     },
