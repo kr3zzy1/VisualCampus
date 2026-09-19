@@ -1,7 +1,7 @@
 import type { Job, University } from '../types';
 
-// Прямой адрес бэкенда обходит проблемный прокси Vite
-const API_BASE = 'http://127.0.0.1:8000';
+// Оставляем пустым, чтобы запросы шли через прокси Vercel на один и тот же домен
+const API_BASE = '';
 
 async function req<T>(url: string, o?: RequestInit): Promise<T> {
   const r = await fetch(`${API_BASE}${url}`, {
